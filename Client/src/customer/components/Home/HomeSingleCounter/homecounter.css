@@ -1,0 +1,43 @@
+.outer-contain {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 20px;
+    color: black;
+  }
+  .container {
+    width: 100vw;
+    border: 2px solid black;
+    border-radius: 10px;
+    /* justify-content: space-between; */
+    padding: 15px;
+    /* background-color: aquamarine; */
+    background-image: url("https://img.freepik.com/free-photo/neon-light-background_52683-132350.jpg?w=1380&t=st=1705329937~exp=1705330537~hmac=f44f2e4e263abb0e167bc876bab7b8c22f0fb87e5faffba9d0d7b30e9673dd5e");
+    background-size: cover; /* or contain, or a specific size like 100% 100% */
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+  .outer {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  .inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .mini {
+    /* border: 1px solid black; */
+    width: 15vw;
+    padding: 5px;
+  }
+  .mini h1 {
+    font-size: 28px;
+    font-weight: 600;
+  }
+  .inner h4{
+    font-size: 22px;
+    font-weight: 500;
+  }

@@ -1,0 +1,29 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { PersistGate } from "redux-persist/integration/react";
+import { Provider } from "react-redux";
+import App from "./App";
+import { store, persistor } from "./redux/store/store";
+import { BrowserRouter as Router } from "react-router-dom";
+import { checkAndClearStorage } from "./utils/clearStorage";
+import { initializeAuth } from "./redux/features/authSlice";
+
+// Check and clear old persisted state before rendering
+checkAndClearStorage();
+
+// Initialize auth state from localStorage
+store.dispatch(initializeAuth());
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Router>
+          <App />
+        </Router>
+      </PersistGate>
+    </Provider>
+  </React.StrictMode>
+);
