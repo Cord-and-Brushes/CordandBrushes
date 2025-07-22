@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import api from "../../../api/api";
 import "./Workshop.css";
 import MyButton from "../../components/common/Button/Button";
+import SoonLoader from "../../components/common/coming_soon_loader/SoonLoader";
+import { handleWorkshop } from "../../Pages/Redrect/Whatsapp";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 
 const Workshop = () => {
   const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const user = useSelector((state) => state.auth.user);
 
   // Fetch workshops from API
   useEffect(() => {
@@ -43,6 +49,18 @@ const Workshop = () => {
     return timeString;
   };
 
+  const handleWorkshopEnquiry = (workshop) => {
+    if (!user) {
+      toast.error("You must be logged in to enquire about the workshop.", {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark",
+      });
+      return;
+    }
+    handleWorkshop(workshop, user);
+  };
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto min-h-screen">
@@ -57,12 +75,12 @@ const Workshop = () => {
     );
   }
 
-  if (error) {
+  if (error || workshops.length === 0) {
     return (
       <div className="max-w-7xl mx-auto min-h-screen">
         <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Workshop</h1>
-          <p className="text-lg text-red-600 font-medium">{error}</p>
+          <SoonLoader />
         </div>
       </div>
     );
@@ -151,7 +169,17 @@ const Workshop = () => {
                   ></i>
                   <span>{workshop.seats} seats left</span>
                 </div>
-                {workshop.mode === "Offline" && workshop.location && (
+                {/* Show Google Meet if online or no location, else show location */}
+                {workshop.mode === "Online" || !workshop.location ? (
+                  <div className="flex items-center gap-3 text-gray-700 text-sm font-semibold">
+                    {/* Google Meet icon: use FontAwesome if available, else fallback */}
+                    <i
+                      className="fab fa-google text-lg"
+                      style={{ color: "#f59e42" }}
+                    ></i>
+                    <span>Google Meet</span>
+                  </div>
+                ) : (
                   <div className="flex items-center gap-3 text-gray-700 text-sm font-semibold">
                     <i
                       className="fas fa-map-marker-alt text-lg"
@@ -164,7 +192,10 @@ const Workshop = () => {
             </div>
 
             <div className="px-8 pb-6 w-full flex justify-center">
-              <MyButton buttonText={"Enroll Now"} />
+              <MyButton
+                buttonText={"Enquire about workshop"}
+                onClick={() => handleWorkshopEnquiry(workshop)}
+              />
             </div>
           </div>
         ))}

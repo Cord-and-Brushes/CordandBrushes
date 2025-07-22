@@ -120,6 +120,7 @@ exports.getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id).populate({
       path: "comments",
+      match: { approved: true }, // Only approved comments
       populate: [
         { path: "author", select: "name" },
         { path: "replies.author", select: "name" },

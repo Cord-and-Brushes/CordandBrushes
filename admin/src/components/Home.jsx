@@ -33,6 +33,16 @@ ChartJS.register(
   Title
 );
 
+// Utility to generate N visually distinct colors
+function generateColors(n) {
+  const colors = [];
+  for (let i = 0; i < n; i++) {
+    // Generate HSL colors with different hues
+    colors.push(`hsl(${(i * 360) / n}, 70%, 55%)`);
+  }
+  return colors;
+}
+
 const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -86,25 +96,16 @@ const Home = () => {
   console.log("Categories: ", categories);
   console.log("Product Counts: ", productCounts);
 
+  const categoryCount = productsInEachCategory.length;
+  const dynamicColors = generateColors(categoryCount);
+
   const pieData = {
     labels: productsInEachCategory.map((category) => category.title),
     datasets: [
       {
         data: productsInEachCategory.map((category) => category.number),
-        backgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-        ],
-        hoverBackgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-        ],
+        backgroundColor: dynamicColors,
+        hoverBackgroundColor: dynamicColors,
       },
     ],
   };

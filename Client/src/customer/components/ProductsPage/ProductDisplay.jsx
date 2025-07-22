@@ -1,41 +1,88 @@
 import React, { useContext, useEffect, useState } from "react";
 import ProductImageViewer from "./ImageViewer";
-import { MdStar } from "react-icons/md";
+import { MdStar, MdStarBorder, MdStarHalf } from "react-icons/md";
 import SizeSelector from "./SizeSelector";
 import ProductDescription from "./ProductDescription";
 import MyButton from "../common/Button/Button";
+import { handleProductBuy } from "../../Pages/Redrect/Whatsapp";
+import { useSelector } from "react-redux";
+import api from "../../../api/api";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProductDisplay = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-
-  /* const singleProduct = {
-    _id: "65fd953c10bf37b002f4d19f",
-    id: 2,
-    name: "Air Jordan XXXVII Low PF",
-    images: [
-      "https://res.cloudinary.com/danwfu3n6/image/upload/v1711117627/vrk8zr1bk5ryinwln3wv.webp",
-      "https://res.cloudinary.com/danwfu3n6/image/upload/v1711117627/fpd3q0huhbhiyyvgu2gt.webp",
-      "https://res.cloudinary.com/danwfu3n6/image/upload/v1711117627/xz3uqm5klu4t5qtjhqyc.webp",
-      "https://res.cloudinary.com/danwfu3n6/image/upload/v1711117627/qsnfgndsnbol04fjn4pu.webp",
-    ],
-    category: "sports",
-    description:
-      "You've got the hops and the speed—lace up in shoes that enhance what you bring to the court. The latest AJ is all about take-offs and landings, with multiple Air units to get you off the ground. The upper is made with strong, reinforced leno-weave fabric that'll keep you contained and leave your game uncompromised. This low-top model is designed for playing on outdoor courts.",
-    new_price: "16295",
-    old_price: "24999",
-    available: true,
-    sizes: ["UK 12", "UK 9", "UK 10", "UK 11"],
-    date: "2024-03-22T14:27:08.774Z",
-    __v: 0,
-  }; */
+  const [userRating, setUserRating] = useState(0);
+  /* const [userFeedback, setUserFeedback] = useState(""); */
+  /* const [submitted, setSubmitted] = useState(false); */
+  const user = useSelector((state) => state.auth.user);
 
   const oldPrice = Number(product.old_price);
   const newPrice = Number(product.new_price);
   const discountPercentage =
     oldPrice > 0 ? ((oldPrice - newPrice) / oldPrice) * 100 : 0;
 
-  console.log(product);
+  // Calculate average rating
+  let ratingsArr = Array.isArray(product.ratings)
+    ? product.ratings.map((r) => (typeof r === "number" ? r : r.rating))
+    : [];
+  const averageRating = product.averageRating || 0;
+  const totalRatings = product.totalRatings || 0;
+
+  //console.log(product);
+
+  const handleRatingSubmit = async (ratingValue) => {
+    if (!user) {
+      setErrorMessage("You must be logged in to rate.");
+      toast.error("You must be logged in to rate.", {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark",
+      });
+      return;
+    }
+    const getAuthToken = () => {
+      return localStorage.getItem("token") || authToken;
+    };
+    const token = getAuthToken();
+    try {
+      const res = await api.post(
+        `/api/products/${product._id}/rate`,
+        { rating: ratingValue },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      //console.log(res);
+      setUserRating(ratingValue);
+
+      setErrorMessage("");
+      toast.success("Rating submitted!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark",
+      });
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Failed to submit rating.");
+      toast.error("Failed to submit rating.", {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark",
+      });
+    }
+  };
+
+  const handleEnquiryClick = () => {
+    if (!user) {
+      toast.error("You must be logged in to enquire about the product.", {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark",
+      });
+      return;
+    }
+    handleProductBuy(product, user);
+  };
 
   return (
     <section className="pt-10 md:py-0">
@@ -47,19 +94,36 @@ const ProductDisplay = ({ product }) => {
           )}
           <div className="flex gap-x-6 mt-4">
             <MyButton
-              // onClick={handleAddToCart}
+              onClick={handleEnquiryClick}
               // disabled={!selectedSize}
-              buttonText={"Add to Cart"}
+              buttonText={"Enquiry for buy"}
               className="btn_outline !rounded hover:bg-green-300 hover:text-black hover:border-black uppercase regular-14 font-anta tracking-widest"
-            >
-              Add to Cart
-            </MyButton>
-            {/* <MyButton
-              buttonText={"Buy it Now"}
-              className="btn_outline !rounded hover:bg-orange-500 hover:text-black hover:border-black uppercase regular-14 font-anta tracking-widest"
-            >
-              Buy it now
-            </MyButton> */}
+            />
+          </div>
+          {/* User Rating Input (no average here) */}
+          <div className="flex flex-col gap-2 mt-4 w-full items-center">
+            <h2>Rate this product:</h2>
+            <div className="flex gap-x-1 items-center justify-center">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  onClick={() => handleRatingSubmit(i)}
+                  className={`cursor-pointer w-5 h-5 rounded-sm border border-gray-400 flex items-center justify-center transition-colors duration-150
+                      ${
+                        i <= userRating
+                          ? "bg-orange-500 border-orange-600"
+                          : "bg-gray-200"
+                      }`}
+                  style={{ minWidth: 20, minHeight: 20 }}
+                />
+              ))}
+              <span className="ml-2 text-black font-semibold text-sm">
+                {userRating > 0 ? userRating : ""}
+              </span>
+            </div>
+            {errorMessage && (
+              <p className="text-red-500 mt-2 text-sm">{errorMessage}</p>
+            )}
           </div>
         </div>
 
@@ -72,13 +136,30 @@ const ProductDisplay = ({ product }) => {
               ? product.category?.name
               : product.category || "Uncategorized"}
           </p>
-          <div className="flex gap-x-1 text-secondary medium-22">
-            <MdStar />
-            <MdStar />
-            <MdStar />
-            <MdStar />
-            <MdStar />
-            <p className="text-black">(89)</p>
+          {/* Average Rating Display (dynamic, below category) */}
+          <div className="flex flex-col gap-1 mt-2 mb-2">
+            {/* <span className="font-semibold text-black">Average Rating:</span> */}
+            <div className="flex gap-x-1 text-secondary medium-22 items-center">
+              {[1, 2, 3, 4, 5].map((i) => {
+                if (i <= Math.floor(averageRating)) {
+                  return <MdStar key={i} className="text-yellow-500" />;
+                } else if (
+                  i === Math.floor(averageRating) + 1 &&
+                  averageRating - Math.floor(averageRating) >= 0.25
+                ) {
+                  // Show half star if decimal part is >= 0.25
+                  return <MdStarHalf key={i} className="text-yellow-500" />;
+                } else {
+                  return <MdStarBorder key={i} className="text-yellow-500" />;
+                }
+              })}
+              <span className="text-black ml-2 font-semibold text-lg">
+                {averageRating.toFixed(1)}
+              </span>
+            </div>
+            <span className="text-gray-500 text-sm mt-1">
+              {totalRatings} rating{totalRatings === 1 ? "" : "s"}
+            </span>
           </div>
           <div className="flex text-secondary gap-x-2 medium-20 my-4">
             {newPrice < oldPrice ? (
@@ -116,9 +197,9 @@ const ProductDisplay = ({ product }) => {
                 product={product}
               />
             )}
-            {errorMessage && (
+            {/*  {errorMessage && (
               <p className="text-red-500 mt-2">{errorMessage}</p>
-            )}
+            )} */}
 
             <ProductDescription product={product} />
           </div>

@@ -66,6 +66,8 @@ const AllLiveClasses = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllLiveClasses(allLiveClasses.filter((item) => item._id !== id));
+      setIsModalOpen(false); // Close modal first
+      setShowLoader(false); // Hide loader before showing toast
       toast.success("Live class removed successfully", {
         position: "bottom-right",
         autoClose: 3000,
@@ -73,10 +75,16 @@ const AllLiveClasses = () => {
         transition: Zoom,
       });
     } catch (error) {
+      setShowLoader(false);
+      setIsModalOpen(false);
+      toast.error("Error removing live class", {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark",
+        transition: Zoom,
+      });
       console.error("Error removing live class:", error);
     }
-    setShowLoader(false);
-    setIsModalOpen(false);
   };
 
   const handleEditClass = (id) => {

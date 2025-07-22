@@ -1,19 +1,24 @@
 import { Fragment, useState, useEffect } from "react";
 import { Dialog, Popover, Transition } from "@headlessui/react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import {
+  Link as RouterLink,
+  useLocation,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import {
   InformationCircleIcon,
   UserIcon,
   XMarkIcon,
   Bars3Icon,
 } from "@heroicons/react/24/outline";
-import Logo from "../../../../assets/logo.png";
+import Logo from "../../../../assets/2.png";
 
 const navigation = {
   pages: [
     { name: "Home", href: "/" },
-    { name: "WorkShop", href: "/workshop" },
-    { name: "Live CLasses", href: "/liveclasses" },
+    { name: "Workshop", href: "/workshop" },
+    { name: "Liveclasses", href: "/liveclasses" },
     { name: "Blog", href: "/blog" },
   ],
 };
@@ -30,6 +35,7 @@ export default function Navigation() {
   const [user, setUser] = useState({ name: "" });
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if the user is logged in
@@ -75,6 +81,7 @@ export default function Navigation() {
     setUser({ name: "" });
     setIsLoggedIn(false);
     setUserMenuOpen(false);
+    navigate("/");
   };
 
   const toggleUserMenu = () => {
@@ -134,8 +141,9 @@ export default function Navigation() {
                   {navigation.pages.map((page) => (
                     <div key={page.name} className="flow-root">
                       <RouterLink
+                        key={page.name}
                         to={page.href}
-                        className="-m-2 block p-2 font-medium text-gray-900"
+                        className="-m-2 block p-2 font-bold text-lg text-gray-900"
                       >
                         {page.name}
                       </RouterLink>
@@ -147,16 +155,17 @@ export default function Navigation() {
                   {isLoggedIn ? (
                     <>
                       <div className="flow-root">
-                        <a
-                          href="#"
+                        <Link
+                          to="/profile"
                           className="-m-2 flex gap-x-2 p-2 font-medium text-gray-900"
                         >
                           <UserIcon
                             className="h-6 w-6 text-black"
                             aria-hidden="true"
                           />
-                          {user.name}
-                        </a>
+                          Profile
+                          {/*   {user.name} */}
+                        </Link>
                       </div>
                       <div className="flow-root">
                         <a
@@ -204,7 +213,11 @@ export default function Navigation() {
         <div className="lg:hidden text-center flex justify-center items-center">
           <a href="#">
             <span className="sr-only">Your Company</span>
-            <img className="h-[100px] w-auto" src={Logo} alt="logo" />
+            <img
+              className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 lg:h-16 lg:w-16 object-contain"
+              src={Logo}
+              alt="logo"
+            />
           </a>
         </div>
 
@@ -218,7 +231,7 @@ export default function Navigation() {
                 {/* Logo on desktop view*/}
                 <a href="#" className="mr-4 hidden lg:block">
                   <span className="sr-only">Your Company</span>
-                  <img className="h-[100px] w-auto" src={Logo} alt="logo" />
+                  <img className="h-28 object-contain" src={Logo} alt="logo" />
                 </a>
 
                 <button
@@ -238,7 +251,7 @@ export default function Navigation() {
                       <RouterLink
                         key={page.name}
                         to={page.href}
-                        className={`flex items-center text-sm font-medium text-black hover:text-[#F94C10] relative`}
+                        className="flex items-center text-md font-semibold text-black hover:text-[#F94C10] relative"
                         style={{
                           paddingBottom:
                             location.pathname === page.href ? "5px" : "0",
@@ -274,12 +287,12 @@ export default function Navigation() {
                       {userMenuOpen && (
                         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                           <div className="py-1">
-                            <a
-                              href="#"
+                            <Link
+                              to="/profile"
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
-                              {user.name}
-                            </a>
+                              Profile{/* {user.name} */}
+                            </Link>
                             <a
                               href="#"
                               onClick={handleLogout}
@@ -295,7 +308,7 @@ export default function Navigation() {
                     <>
                       <a
                         href="/auth/login"
-                        className="text-sm font-medium text-gray-700 hover:text-gray-800"
+                        className="text-md font-semibold text-gray-700 hover:text-gray-800"
                       >
                         Sign in
                       </a>
@@ -305,90 +318,13 @@ export default function Navigation() {
                       />
                       <a
                         href="/auth/signup"
-                        className="text-sm font-medium text-gray-700 hover:text-gray-800"
+                        className="text-md font-semibold text-gray-700 hover:text-gray-800"
                       >
                         Create account
                       </a>
                     </>
                   )}
                 </div>
-
-                {/* Info logo */}
-                <div className="ml-4 flow-root lg:ml-6">
-                  {/* Info Overlay Trigger */}
-                  <button
-                    type="button"
-                    className="hidden lg:block ml-2 p-2 text-black"
-                    onClick={openInfoOverlay}
-                  >
-                    <span className="sr-only">Company Info</span>
-                    <InformationCircleIcon
-                      className="h-6 w-6"
-                      aria-hidden="true"
-                    />
-                  </button>
-                </div>
-
-                {/* Info Overlay */}
-                <Transition.Root show={infoOverlayOpen} as={Fragment}>
-                  <Dialog
-                    as="div"
-                    className="fixed inset-0 z-50 overflow-hidden"
-                    onClose={closeInfoOverlay}
-                  >
-                    <div className="absolute inset-0 overflow-hidden">
-                      <Transition.Child
-                        as={Fragment}
-                        enter="transform transition ease-in-out duration-200 sm:duration-700"
-                        enterFrom="translate-x-full"
-                        enterTo="translate-x-0"
-                        leave="transform transition ease-in-out duration-200 sm:duration-700"
-                        leaveFrom="translate-x-0"
-                        leaveTo="translate-x-full"
-                      >
-                        <div className="absolute inset-0 transition-opacity bg-black bg-opacity-25" />
-                      </Transition.Child>
-
-                      <Transition.Child
-                        as={Fragment}
-                        enter="transform transition ease-in-out duration-500 sm:duration-700"
-                        enterFrom="translate-x-full"
-                        enterTo="translate-x-0"
-                        leave="transform transition ease-in-out duration-500 sm:duration-700"
-                        leaveFrom="translate-x-0"
-                        leaveTo="translate-x-full"
-                      >
-                        <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
-                          <div className="w-screen max-w-md">
-                            <div className="relative flex flex-col h-full p-6 bg-white shadow-xl">
-                              <button
-                                type="button"
-                                className="absolute top-7 mr-3 right-0 -mt-2 p-2 hover:bg-[#ef986d] text-white hover:text-black"
-                                onClick={closeInfoOverlay}
-                              >
-                                <span className="sr-only">Close</span>
-                                <XMarkIcon
-                                  className="h-6 w-6"
-                                  aria-hidden="true"
-                                />
-                              </button>
-
-                              {/* Company Info Content */}
-                              <div className="mt-20">
-                                <div>
-                                  <img src="/logo.png" alt="img" />
-                                </div>
-                                <h1 className="text-2xl font-bold mb-4">
-                                  Company Info
-                                </h1>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </Transition.Child>
-                    </div>
-                  </Dialog>
-                </Transition.Root>
               </div>
             </div>
           </div>

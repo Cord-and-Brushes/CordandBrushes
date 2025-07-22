@@ -142,7 +142,9 @@ const CategoryList = () => {
                   <th className="p-2 font-anta uppercase">Thumbnail</th>
                   <th className="p-2 font-anta uppercase">Name</th>
                   <th className="p-2 font-anta uppercase">Products</th>
+                  <th className="p-2 font-anta uppercase">Remove/Edit</th>{" "}
                   <th className="p-2 font-anta uppercase">Available</th>
+                  {/* Combined column */}
                 </tr>
               </thead>
               <tbody>
@@ -165,6 +167,27 @@ const CategoryList = () => {
                       {productCounts[category._id] || 0}
                     </td>
 
+                    <td className="p-2 flex mt-2 gap-x-5 justify-center items-center">
+                      {" "}
+                      {/* Combined actions */}
+                      <button
+                        className="hover:text-orange-600"
+                        onClick={() => {
+                          setCategoryToDelete(category._id);
+                          setIsModalOpen(true);
+                        }}
+                      >
+                        <TbTrash className="text-[22px]" />
+                      </button>
+                      <button
+                        className="hover:text-orange-600"
+                        onClick={() =>
+                          navigate(`/admin/editcategory/${category._id}`)
+                        }
+                      >
+                        <RiEdit2Line className="text-[22px]" />
+                      </button>
+                    </td>
                     <td className="p-2">
                       <div className="flex justify-center items-center">
                         <label className="switch font-anta">

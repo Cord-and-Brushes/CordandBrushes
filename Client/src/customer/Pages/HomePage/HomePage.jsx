@@ -28,7 +28,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="min-h-screen flex flex-col items-center justify-center">
       {/* <HomePageCarousel /> */}
       <Banner pageName="HomePage" />
       <div className="items-center mb-10">
@@ -50,7 +50,6 @@ const HomePage = () => {
       </div>
 
       <div className="flex flex-col items-center justify-center w-full rounded-md border-2 border-black lg:my-[50px] ">
-        {/*  <HomeOffersCarousel /> */}
         <Banner pageName="Offers" />
       </div>
 
@@ -80,7 +79,7 @@ const HomePage = () => {
       {/* Custom Loader Overlay */}
       {showLoader && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="flexCenter flex-col gap-4 bg-white p-8 rounded-lg">
+          <div className="flexCenter flex-col gap-4  bg-white p-8 rounded-lg">
             <div className="spinner"></div>
             <div className="text-lg font-medium">Loading...</div>
           </div>

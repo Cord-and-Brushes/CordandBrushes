@@ -76,12 +76,6 @@ const EditLiveClass = ({ fetchLiveClass, updateLiveClass }) => {
         });
         if (data.liveClass && data.liveClass.image)
           setImagePreview(data.liveClass.image);
-        toast.success("LiveClass updated successfully!", {
-          position: "bottom-right",
-          autoClose: 3000,
-          theme: "dark",
-          transition: Zoom,
-        });
       } catch (err) {
         toast.error("Liveclass cannot be updated!", {
           position: "bottom-right",
@@ -139,7 +133,7 @@ const EditLiveClass = ({ fetchLiveClass, updateLiveClass }) => {
       } else {
         // Example PUT, replace with your API
         const token = localStorage.getItem("token");
-        await fetch(`/api/liveclasses/edit/${liveClassId}`, {
+        const response = await fetch(`/api/liveclasses/edit/${liveClassId}`, {
           method: "PUT",
           body: JSON.stringify({
             course: liveClassData.course,
@@ -157,8 +151,26 @@ const EditLiveClass = ({ fetchLiveClass, updateLiveClass }) => {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        if (response.ok) {
+          navigate("/admin/allliveclasses");
+          toast.success("LiveClass updated successfully!", {
+            position: "bottom-right",
+            autoClose: 3000,
+            theme: "dark",
+            transition: Zoom,
+          });
+        } else {
+          const errorData = await response.json();
+          navigate("/admin/allliveclasses");
+          toast.error(errorData.message || "Error updating live class", {
+            position: "bottom-right",
+            autoClose: 3000,
+            theme: "dark",
+            transition: Zoom,
+          });
+        }
       }
-      navigate("/admin/allliveclasses");
     } catch (err) {
       toast.error("Error updating live class", {
         position: "bottom-right",
@@ -281,7 +293,7 @@ const EditLiveClass = ({ fetchLiveClass, updateLiveClass }) => {
         {/* Location */}
         <div className="mb-3">
           <h4 className="font-anta bold-18 pb-2">Location:</h4>
-          <select
+          <input
             type="text"
             name="location"
             placeholder="Location"
@@ -289,13 +301,7 @@ const EditLiveClass = ({ fetchLiveClass, updateLiveClass }) => {
             value={liveClassData.location}
             onChange={handleInputChange}
             required
-          >
-            <option value="">Select Location</option>
-            <option value="Bhillai">Bhillai</option>
-            <option value="Bangalore">Bangalore</option>
-            <option value="Mumbai">Mumbai</option>
-            <option value="Berhampur">Berhampur</option>
-          </select>
+          />
         </div>
         {/* Level */}
         <div className="mb-3">

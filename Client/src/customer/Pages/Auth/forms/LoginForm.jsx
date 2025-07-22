@@ -32,7 +32,9 @@ const LoginForm = () => {
         if (
           response.user &&
           (response.user.isVerified === true ||
-            response.user.isVerified === "true")
+            response.user.isVerified === "true") &&
+          (response.user.isPhoneVerified === true ||
+            response.user.isPhoneVerified === "true")
         ) {
           localStorage.setItem("token", response.token);
           localStorage.setItem("user", JSON.stringify(response.user));
@@ -43,6 +45,16 @@ const LoginForm = () => {
             response.user.isVerified === "false")
         ) {
           setLoginError("Please verify your email before logging in.");
+        } else if (
+          response.user &&
+          (response.user.isPhoneVerified === false ||
+            response.user.isPhoneVerified === "false")
+        ) {
+          setLoginError("Please verify your phone number before logging in.");
+          // Optionally redirect to phone verification
+          setTimeout(() => {
+            navigate("/auth/phone-verification");
+          }, 3000);
         } else {
           setLoginError(response.message || "Login failed. Please try again.");
         }
@@ -58,6 +70,12 @@ const LoginForm = () => {
           setLoginError(
             "Invalid email or password. Please check your credentials."
           );
+        } else if (err.message && err.message.includes("phone")) {
+          setLoginError(err.message);
+          // Redirect to phone verification if phone verification is needed
+          setTimeout(() => {
+            navigate("/auth/phone-verification");
+          }, 3000);
         } else {
           setLoginError(err.message || "Login failed. Please try again.");
         }
@@ -103,12 +121,14 @@ const LoginForm = () => {
               required
             />
           </div>
-          <p
-            className="mt-3 ml-4 hover:underline hover:text-orange-600 cursor-pointer"
-            onClick={handleForgotPassword}
-          >
-            Forgot password?
-          </p>
+          <div className="flex justify-between items-center mt-3">
+            <p
+              className="hover:underline hover:text-orange-600 cursor-pointer"
+              onClick={handleForgotPassword}
+            >
+              Forgot password?
+            </p>
+          </div>
           <div className="flex flex-col gap-x-3 justify-center items-center py-4">
             <MyButton
               buttonText={loading ? "Logging in..." : "Login"}

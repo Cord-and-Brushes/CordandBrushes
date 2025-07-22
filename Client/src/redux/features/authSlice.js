@@ -64,6 +64,24 @@ export const verifyEmail = createAsyncThunk(
   }
 );
 
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (profileData, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = state.auth.token || localStorage.getItem("token");
+      const response = await api.put("/api/auth/profile", profileData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data.user;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 const initialState = {
   user: null,
   token: null,
@@ -101,6 +119,9 @@ const authSlice = createSlice({
         state.user = null;
       }
     },
+    clearError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -110,11 +131,8 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        // Store in localStorage
-        localStorage.setItem("token", action.payload.token);
-        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        // Do NOT set user or token here!
+        // Optionally, you can set a success message if you want
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -168,9 +186,22 @@ const authSlice = createSlice({
       .addCase(verifyEmail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { logout, initializeAuth } = authSlice.actions;
+export const { logout, initializeAuth, clearError } = authSlice.actions;
 export default authSlice.reducer;

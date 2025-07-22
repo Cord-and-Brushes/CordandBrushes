@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import logo from "../../../assets/logo.png";
+import logo from "../../../assets/2.png";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import LoginForm from "./forms/LoginForm";
 import SignupForm from "./forms/SignupForm";
@@ -63,12 +63,10 @@ const Auth = () => {
           </div>
         </div>
       )}
-      {/* LEFT SECTION */}
-      <div className="w-full lg:w-3/5 bg-gray-100 relative h-screen">
-        <div className="fixed top-5 left-5">
-          <img src={logo} alt="Company Logo" className="fixed h-[100px]" />
-        </div>
-        <div className="h-full flex justify-center items-center overflow-hidden">
+
+      {/* MOBILE: Form above, images as background */}
+      <div className="block lg:hidden relative min-h-screen w-full">
+        <div className="absolute inset-0 z-0">
           <img
             src={images[currentImageIndex]}
             alt={`Slide ${currentImageIndex + 1}`}
@@ -77,19 +75,51 @@ const Auth = () => {
             }`}
           />
         </div>
+        <div className="relative z-10 flex flex-col justify-center items-center min-h-screen bg-white/20 px-6 py-8 sm:py-8 md:px-8">
+          <div className="flex justify-center items-center w-full mt-2 mb-6">
+            <img src={logo} alt="Company Logo" className="h-[70px] w-auto" />
+          </div>
+          <Routes>
+            <Route path="login" element={<LoginForm />} />
+            <Route path="signup" element={<SignupForm />} />
+            <Route path="forgot-password" element={<ForgotPasswordForm />} />
+            <Route
+              path="reset-password/:userId/:token"
+              element={<ResetPasswordForm />}
+            />
+          </Routes>
+        </div>
       </div>
 
-      {/* RIGHT SECTION */}
-      <div className="w-full lg:w-2/5 flex flex-col justify-center items-center p-8 absolute lg:relative top-32 lg:top-auto left-0 lg:left-auto z-10 lg:bg-white bg-transparent">
-        <Routes>
-          <Route path="login" element={<LoginForm />} />
-          <Route path="signup" element={<SignupForm />} />
-          <Route path="forgot-password" element={<ForgotPasswordForm />} />
-          <Route
-            path="reset-password/:userId/:token"
-            element={<ResetPasswordForm />}
-          />
-        </Routes>
+      {/* DESKTOP: Side by side */}
+      <div className="hidden lg:flex w-full h-screen">
+        {/* LEFT SECTION: Images */}
+        <div className="w-3/5 bg-gray-100 relative h-full">
+          <div className="absolute top-5 left-5 z-10">
+            <img src={logo} alt="Company Logo" className="h-[80px]" />
+          </div>
+          <div className="h-full flex justify-center items-center overflow-hidden">
+            <img
+              src={images[currentImageIndex]}
+              alt={`Slide ${currentImageIndex + 1}`}
+              className={`w-full h-full object-cover transition-opacity duration-500 ${
+                isFadingOut ? "opacity-0" : "opacity-100"
+              }`}
+            />
+          </div>
+        </div>
+        {/* RIGHT SECTION: Form */}
+        <div className="w-2/5 flex flex-col justify-center items-center px-8 py-0 relative z-10 bg-white min-h-[400px]">
+          <Routes>
+            <Route path="login" element={<LoginForm />} />
+            <Route path="signup" element={<SignupForm />} />
+            <Route path="forgot-password" element={<ForgotPasswordForm />} />
+            <Route
+              path="reset-password/:userId/:token"
+              element={<ResetPasswordForm />}
+            />
+          </Routes>
+        </div>
       </div>
     </div>
   );

@@ -57,4 +57,7 @@ router.delete(
 /* router.get("/category/:id", productController.getProductByCategoryId); */
 /* router.get("/category/:name", productController.getProductByCategoryId);
  */
+
+router.post("/:productId/rate", authMiddleware, productController.rateProduct);
+
 module.exports = router;

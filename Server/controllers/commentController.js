@@ -5,8 +5,13 @@ exports.createComment = async (req, res) => {
   try {
     const { content, postId } = req.body;
     const author = req.user._id;
-    // Create a new comment
-    const comment = new Comment({ content, author, post: postId });
+    // Create a new comment (approved: false by default)
+    const comment = new Comment({
+      content,
+      author,
+      post: postId,
+      approved: false,
+    });
     await comment.save();
     await comment.populate("author", "name");
     await comment.populate("replies.author", "name");
@@ -210,5 +215,63 @@ exports.deleteReply = async (req, res) => {
       .json({ success: true, message: "Reply deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+// Admin-only: Approve a comment
+exports.approveComment = async (req, res) => {
+  try {
+    // Only admin can approve
+    if (!req.user || req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "Forbidden: Only admin can approve comments." });
+    }
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    comment.approved = true;
+    await comment.save();
+    res.status(200).json({ message: "Comment approved successfully", comment });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Get all unapproved comments (admin only)
+exports.getUnapprovedComments = async (req, res) => {
+  try {
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Forbidden: Only admin can view unapproved comments.",
+      });
+    }
+    const comments = await Comment.find({ approved: false })
+      .populate("author", "name")
+      .sort({ datePosted: -1 });
+    res.status(200).json({ comments });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Get all comments for a specific post (admin, includes unapproved)
+exports.getCommentsByPostId = async (req, res) => {
+  try {
+    if (!req.user || req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({
+          message: "Forbidden: Only admin can view all comments for a post.",
+        });
+    }
+    const { postId } = req.params;
+    const comments = await Comment.find({ post: postId })
+      .populate("author", "name")
+      .sort({ datePosted: -1 });
+    res.status(200).json({ comments });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
   }
 };

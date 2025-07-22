@@ -20,4 +20,28 @@ router.delete(
   commentController.deleteReply
 );
 
+// Approve a comment (admin only)
+router.put(
+  "/approve/:id",
+  authMiddleware,
+  adminMiddleware,
+  commentController.approveComment
+);
+
+// Get all unapproved comments (admin only)
+router.get(
+  "/unapproved",
+  authMiddleware,
+  adminMiddleware,
+  commentController.getUnapprovedComments
+);
+
+// Get all comments for a specific post (admin, includes unapproved)
+router.get(
+  "/bypost/:postId",
+  authMiddleware,
+  adminMiddleware,
+  commentController.getCommentsByPostId
+);
+
 module.exports = router;

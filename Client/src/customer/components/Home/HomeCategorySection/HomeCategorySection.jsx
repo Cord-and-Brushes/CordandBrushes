@@ -47,6 +47,7 @@ const HomeCategorySection = () => {
   if (error) {
     return (
       <div className="mb-12 mt-[70px] flex justify-center items-center">
+        <div className="text-3xl text-red-500 mb-2">⚠️</div>
         <div className="text-lg text-red-500">{error}</div>
       </div>
     );

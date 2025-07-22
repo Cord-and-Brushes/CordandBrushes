@@ -22,6 +22,7 @@ import CategoryProducts from "./customer/Pages/Category/CategoryProducts";
 /* import Blogs from "./customer/Pages/BlogPage/Blogs"; */
 import AllProducts from "./customer/Pages/Product/getAllProducts";
 import Team from "./customer/Pages/About/Team";
+import ProfilePage from "./customer/Pages/About/ProfilePage";
 
 const AuthPages = ["/auth/signup", "/auth/login", "/auth/forgot-password"];
 
@@ -45,6 +46,7 @@ function App() {
           <Route path="/workshop" element={<WorkShop />} />
           <Route path="/liveclasses" element={<LiveClasses />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/auth/*" element={<Auth />} /> {/* All auth routes */}
           <Route path="/cart" element={<Cart />} />

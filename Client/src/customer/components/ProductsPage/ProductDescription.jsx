@@ -33,13 +33,7 @@ const ProductDescription = ({ product }) => {
             {product.description}
           </p>
         ) : (
-          /*  <div className="pt-6 flex gap-x-2 medium-16 mb-4 w-80 h-auto justify-center items-center">
-        {showDetails ? (
-          <p className="text-black text-sm">{product.description}</p> */
-          /*  <img src={floral2} alt="Size Guide" className="w-[50%] h-auto" /> */
           <div className="w-full flex flex-col items-center">
-            {/* <h4 className="font-anta text-black mb-2">Size Guide</h4> */}
-            {/* Example table, replace with your actual size guide */}
             <table className="text-black text-xs border border-gray-300">
               <thead>
                 <tr>
@@ -92,8 +86,6 @@ const ProductDescription = ({ product }) => {
                 </tr>
               </tbody>
             </table>
-            {/* Or, if you want to keep the image as well: */}
-            {/* <img src={floral2} alt="Size Guide" className="w-[50%] h-auto mt-4" /> */}
           </div>
         )}
       </div>

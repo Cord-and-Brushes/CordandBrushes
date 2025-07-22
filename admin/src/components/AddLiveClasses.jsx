@@ -190,7 +190,7 @@ const AddLiveClasses = () => {
         <div className="flex flex-col lg:flex-row gap-x-10">
           <div className="mb-3 w-full">
             <h4 className="font-anta bold-18 pb-2">Location:</h4>
-            <select
+            <input
               type="text"
               name="location"
               placeholder="Location"
@@ -198,13 +198,7 @@ const AddLiveClasses = () => {
               value={liveClassData.location}
               onChange={handleInputChange}
               required
-            >
-              <option value="">Select Location</option>
-              <option value="Bhillai">Bhillai</option>
-              <option value="Bangalore">Bangalore</option>
-              <option value="Mumbai">Mumbai</option>
-              <option value="Berhampur">Berhampur</option>
-            </select>
+            />
           </div>
           <div className="mb-3 w-full">
             <h4 className="font-anta bold-18 pb-2">Level:</h4>

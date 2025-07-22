@@ -8,6 +8,8 @@ import { store, persistor } from "./redux/store/store";
 import { BrowserRouter as Router } from "react-router-dom";
 import { checkAndClearStorage } from "./utils/clearStorage";
 import { initializeAuth } from "./redux/features/authSlice";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Check and clear old persisted state before rendering
 checkAndClearStorage();
@@ -22,6 +24,7 @@ root.render(
       <PersistGate loading={null} persistor={persistor}>
         <Router>
           <App />
+          <ToastContainer />
         </Router>
       </PersistGate>
     </Provider>

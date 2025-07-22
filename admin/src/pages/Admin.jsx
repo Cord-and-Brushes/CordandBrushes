@@ -22,6 +22,8 @@ import AddWorkshop from "../components/AddWorkshop";
 import EditWorkshop from "../components/EditWorkshop";
 import AllWorkshops from "../components/AllWorkshop";
 import AboutPageEdit from "../components/AboutPageEdit";
+import EditCategory from "../components/EditCategory";
+/* import AllComments from "../components/AllComments"; */
 //
 
 const Admin = () => {
@@ -54,6 +56,8 @@ const Admin = () => {
           <Route path="allworkshops" element={<AllWorkshops />} />
           <Route path="editworkshop/:id" element={<EditWorkshop />} />
           <Route path="aboutpagecontent" element={<AboutPageEdit />} />
+          <Route path="editcategory/:id" element={<EditCategory />} />
+          {/*    <Route path="allcomments" element={<AllComments />} /> */}
         </Routes>
       </div>
     </div>

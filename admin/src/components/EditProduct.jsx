@@ -28,7 +28,7 @@ const EditProduct = () => {
 
   const dispatch = useDispatch();
   const product = useSelector((state) => state.products.product);
-  console.log("Product: ", product);
+  //console.log("Product: ", product);
 
   useEffect(() => {
     dispatch(fetchProductById({ id }));
@@ -145,9 +145,11 @@ const EditProduct = () => {
         available: true,
         popular: false,
       });
+
       setShowUpload(true);
       setShowLoader(false);
     } catch (error) {
+      // console.log(productData);
       console.error("Error:", error);
       toast.error("Error updating product. Please try again.", {
         position: "bottom-right",
@@ -164,6 +166,11 @@ const EditProduct = () => {
     }
   };
 
+  if (!product) {
+    return <div>Loading...</div>;
+  }
+
+  // Now it's safe to access product properties
   const oldPrice = Number(product.old_price);
   const newPrice = Number(product.new_price);
   const discountPercentage =

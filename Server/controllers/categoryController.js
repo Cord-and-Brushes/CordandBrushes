@@ -83,3 +83,44 @@ exports.toggleCategoryAvailability = async (req, res) => {
     res.status(500).json({ message: "Server error!", error });
   }
 };
+
+exports.updateCategoryImages = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      console.log(res);
+      return res.status(404).json({ message: "Category not found!" });
+    }
+
+    // Only update if new files are provided
+    if (req.files && req.files.thumbnailImage && req.files.thumbnailImage[0]) {
+      const thumbnailImageUrl = await uploadToCloudinary(
+        req.files.thumbnailImage[0]
+      );
+      category.thumbnail_image = thumbnailImageUrl;
+    }
+    if (req.files && req.files.bannerImage && req.files.bannerImage[0]) {
+      const bannerImageUrl = await uploadToCloudinary(req.files.bannerImage[0]);
+      category.banner_image = bannerImageUrl;
+    }
+
+    await category.save();
+    res.status(200).json({ success: true, category });
+  } catch (error) {
+    console.error("Error updating category images:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.deleteCategory = async (req, res) => {
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found!" });
+    }
+    res.status(200).json({ message: "Category deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    res.status(500).json({ error: error.message });
+  }
+};

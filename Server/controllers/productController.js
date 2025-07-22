@@ -22,7 +22,7 @@ exports.createProduct = async (req, res) => {
       .json({ message: "Forbidden: only admins can create products!" });
   }
   try {
-    console.log("Starting product upload...");
+    // console.log("Starting product upload...");
 
     // Validate form data
     const {
@@ -35,7 +35,7 @@ exports.createProduct = async (req, res) => {
       available,
       popular,
     } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     if (
       !name ||
       !categoryId ||
@@ -56,12 +56,12 @@ exports.createProduct = async (req, res) => {
     // Upload product images to Cloudinary
     const imageUrls = await Promise.all(
       req.files.images.map(async (file) => {
-        console.log("Uploading product file:", file.originalname);
+        //  console.log("Uploading product file:", file.originalname);
         return await uploadToCloudinary(file);
       })
     );
 
-    console.log("Collected image URLs:", imageUrls);
+    // console.log("Collected image URLs:", imageUrls);
 
     const sizesArray = sizes.split(",").map((size) => size.trim());
 
@@ -80,7 +80,7 @@ exports.createProduct = async (req, res) => {
 
     // Save the product to MongoDB
     await product.save();
-    console.log("Saving Product to MongoDB Successful...");
+    // console.log("Saving Product to MongoDB Successful...");
 
     res.json({
       success: true,
@@ -112,7 +112,20 @@ exports.getProductById = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    res.status(200).json({ product });
+
+    // Calculate average rating and total ratings
+    const ratingsArr = product.ratings.map((r) => r.rating);
+    const averageRating = ratingsArr.length
+      ? ratingsArr.reduce((a, b) => a + b, 0) / ratingsArr.length
+      : 0;
+    const totalRatings = ratingsArr.length;
+
+    // Add these to the product object
+    const productObj = product.toObject();
+    productObj.averageRating = averageRating;
+    productObj.totalRatings = totalRatings;
+
+    res.status(200).json({ product: productObj });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
@@ -135,7 +148,7 @@ exports.updateProduct = async (req, res) => {
       available,
       popular,
     } = req.body;
-    console.log(req.body);
+    //  console.log(req.body);
     if (
       !name ||
       !categoryId ||
@@ -150,10 +163,10 @@ exports.updateProduct = async (req, res) => {
 
     // Find the product by ID
     const productId = req.params.id;
-    console.log(`Fetching product with custom ID: ${productId}`);
+    //console.log(`Fetching product with custom ID: ${productId}`);
 
     const product = await Product.findById(req.params.id);
-    console.log("found froduct:", product);
+    // console.log("found froduct:", product);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -186,7 +199,7 @@ exports.updateProduct = async (req, res) => {
       // category_banner: categoryBannerUrl ? categoryBannerUrl : product.category_banner,
       // category_thumbnail: categoryThumbnailUrl ? categoryThumbnailUrl : product.category_thumbnail,
     };
-    console.log(update);
+    // console.log(update);
     const updatedProduct = await Product.findOneAndUpdate(
       { _id: productId },
       update,
@@ -219,7 +232,7 @@ exports.deleteProduct = async (req, res) => {
     }
 
     // Delete images from Cloudinary
-    console.log("Deleting images from Cloudinary...");
+    //   console.log("Deleting images from Cloudinary...");
     const imageUrls = [
       ...(product.images || []),
       product.category_banner,
@@ -234,7 +247,7 @@ exports.deleteProduct = async (req, res) => {
           imageUrl.lastIndexOf(".")
         );
         await cloudinary.uploader.destroy(publicId);
-        console.log(`Image with publicId ${publicId} deleted from cloudinary.`);
+        //     console.log(`Image with publicId ${publicId} deleted from cloudinary.`);
       } catch (err) {
         console.error(
           `Error deleting image with publicId ${publicId}from Cloudinary:`,
@@ -336,5 +349,44 @@ exports.getPopularProducts = async (req, res) => {
     res.status(200).json({ popularProducts });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+exports.rateProduct = async (req, res) => {
+  if (!req.user || !req.user._id) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
+  const { productId } = req.params;
+  const { rating } = req.body;
+  const userId = req.user._id; // assuming auth middleware sets req.user
+
+  try {
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    // Check if user already rated
+    const existing = product.ratings.find(
+      (r) => r.user.toString() === userId.toString()
+    );
+    if (existing) {
+      existing.rating = rating;
+    } else {
+      product.ratings.push({ user: userId, rating });
+    }
+    await product.save();
+
+    // Calculate new average
+    const ratingsArr = product.ratings.map((r) => r.rating);
+    const averageRating = ratingsArr.length
+      ? ratingsArr.reduce((a, b) => a + b, 0) / ratingsArr.length
+      : 0;
+
+    res.json({
+      message: "Rating submitted",
+      averageRating,
+      totalRatings: ratingsArr.length,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

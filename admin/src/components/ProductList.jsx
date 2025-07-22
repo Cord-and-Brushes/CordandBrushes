@@ -25,7 +25,7 @@ const ProductList = () => {
       try {
         const response = await dispatch(fetchAllProducts()).unwrap();
         setAllProducts(response);
-        console.log(response);
+        // console.log(response);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -43,7 +43,8 @@ const ProductList = () => {
   const deleteProducts = async (id) => {
     setShowLoader(true);
     try {
-      dispatch(deleteProduct(id));
+      // Await the dispatch and unwrap the result to catch errors
+      await dispatch(deleteProduct(id)).unwrap();
 
       setAllProducts(allProducts.filter((product) => product._id !== id));
       toast.success("Product removed successfully", {
@@ -69,7 +70,8 @@ const ProductList = () => {
         theme: "dark",
         transition: Zoom,
       });
-      // console.error("Error removing product:", error);
+      // Optionally log the error
+      console.error("Error removing product:", error);
     }
     setShowLoader(false);
     setIsModalOpen(false);

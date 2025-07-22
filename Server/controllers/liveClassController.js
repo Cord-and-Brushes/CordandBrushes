@@ -6,8 +6,9 @@ const uploadToCloudinary = require("../utils/uploadToCloudinary");
   try {
     const locations = await LiveClass.distinct("location");
     res.status(200).json(locations);
-    console.log(locations);
+    // console.log(locations);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: err.message });
   }
 };

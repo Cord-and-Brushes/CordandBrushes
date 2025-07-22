@@ -18,7 +18,6 @@ const LiveClassSchema = new mongoose.Schema({
   seats: { type: Number, required: true },
   location: {
     type: String,
-    enum: ["Bhillai", "Mumbai", "Bangalore", "Berhampur", "berhampur"],
     required: true,
   },
   available: { type: Boolean, default: true },

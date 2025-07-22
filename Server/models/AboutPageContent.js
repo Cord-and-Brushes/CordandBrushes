@@ -11,6 +11,7 @@ const TeamMemberSchema = new mongoose.Schema({
   name: String,
   designation: String,
   image: String,
+  feedback: String,
 });
 const AboutPageContentSchema = new mongoose.Schema({
   storyTitle: String,

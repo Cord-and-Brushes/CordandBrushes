@@ -15,6 +15,8 @@ import {
   selectCurrentUser,
   selectAuthToken,
 } from "../../../redux/features/blogSlice";
+import { toast, Zoom } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -55,13 +57,23 @@ const BlogDetails = () => {
     e.preventDefault();
     console.log("handlecomment submit called");
     if (!newComment.trim()) {
-      alert("Please enter a comment");
+      toast.error("Please enter a comment.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
     const token = getAuthToken();
     if (!token) {
-      alert("Please login to post a comment");
+      toast.info("Please login to post a comment.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
@@ -75,6 +87,12 @@ const BlogDetails = () => {
       console.log("Comment created successfully:", response.data);
       setNewComment("");
       setCommentStatus("succeeded");
+      toast.info("An admin will verify your comment before it appears.", {
+        position: "bottom-right",
+        autoClose: 3000,
+        theme: "dark",
+        transition: Zoom,
+      });
       // Refresh the blog data to get the updated comments
       dispatch(fetchBlogById(id));
     } catch (error) {
@@ -83,7 +101,12 @@ const BlogDetails = () => {
         error.response?.data?.message ||
         error.message ||
         "Failed to post comment";
-      alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       setCommentStatus("failed");
     }
   };
@@ -91,35 +114,67 @@ const BlogDetails = () => {
   const handleLike = async () => {
     const token = getAuthToken();
     if (!token) {
-      alert("Please login to like this post");
+      toast.info("Please login to like this post.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
-
+    if (hasLiked) {
+      toast.info("You have already liked this post.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+      });
+      return;
+    }
     setLikeStatus("loading");
     try {
       const result = await dispatch(addLike(id)).unwrap();
       console.log("Like added successfully:", result);
       setLikeStatus("succeeded");
+      toast.success("Liked the post!", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+      });
       // Refresh the blog data to get the updated likes
       dispatch(fetchBlogById(id));
     } catch (error) {
       console.error("Failed to like post:", error);
       const errorMessage =
         error.response?.data?.message || error.message || "Failed to like post";
-      alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       setLikeStatus("failed");
     }
   };
 
   const handleEditComment = async (commentId) => {
     if (!editCommentText.trim()) {
-      alert("Please enter a comment");
+      toast.error("Please enter a comment.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
     const token = getAuthToken();
     if (!token) {
-      alert("Please login to edit comments");
+      toast.info("Please login to edit comments.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
@@ -148,7 +203,12 @@ const BlogDetails = () => {
         error.response?.data?.message ||
         error.message ||
         "Failed to edit comment";
-      alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
     }
   };
 
@@ -159,7 +219,12 @@ const BlogDetails = () => {
 
     const token = getAuthToken();
     if (!token) {
-      alert("Please login to delete comments");
+      toast.info("Please login to delete comments.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
@@ -205,7 +270,12 @@ const BlogDetails = () => {
         error.response?.data?.message ||
         error.message ||
         "Failed to delete comment";
-      alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
     }
   };
 
@@ -222,13 +292,23 @@ const BlogDetails = () => {
   // Reply handlers
   const handleReplySubmit = async (commentId) => {
     if (!replyText.trim()) {
-      alert("Please enter a reply");
+      toast.error("Please enter a reply.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
     const token = getAuthToken();
     if (!token) {
-      alert("Please login to post a reply");
+      toast.info("Please login to post a reply.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
@@ -257,20 +337,35 @@ const BlogDetails = () => {
         error.response?.data?.message ||
         error.message ||
         "Failed to post reply";
-      alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       setReplyStatus("failed");
     }
   };
 
   const handleEditReply = async (replyId, commentId) => {
     if (!editReplyText.trim()) {
-      alert("Please enter a reply");
+      toast.error("Please enter a reply.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
     const token = getAuthToken();
     if (!token) {
-      alert("Please login to edit replies");
+      toast.info("Please login to edit replies.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
@@ -294,7 +389,12 @@ const BlogDetails = () => {
         error.response?.data?.message ||
         error.message ||
         "Failed to edit reply";
-      alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
     }
   };
 
@@ -305,7 +405,12 @@ const BlogDetails = () => {
 
     const token = getAuthToken();
     if (!token) {
-      alert("Please login to delete replies");
+      toast.info("Please login to delete replies.", {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
       return;
     }
 
@@ -323,7 +428,12 @@ const BlogDetails = () => {
         error.response?.data?.message ||
         error.message ||
         "Failed to delete reply";
-      alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-right",
+        autoClose: 2000,
+        theme: "dark",
+        transition: Zoom,
+      });
     }
   };
 
@@ -642,8 +752,11 @@ const BlogDetails = () => {
   // Loading state
   if (status === "loading") {
     return (
-      <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
-        <div className="text-center text-lg">Loading blog...</div>
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div className="flexCenter flex-col gap-4 bg-white p-8 rounded-lg">
+          <div className="spinner"></div>
+          <div className="text-lg font-medium">Loading blog...</div>
+        </div>
       </div>
     );
   }
@@ -668,7 +781,17 @@ const BlogDetails = () => {
     );
   }
 
+  // Determine if the current user has already liked the post
   const isLoggedIn = !!getAuthToken();
+  const userId = currentUser?._id;
+  const hasLiked =
+    isLoggedIn &&
+    userId &&
+    post.likes &&
+    Array.isArray(post.likes) &&
+    post.likes.some((like) =>
+      typeof like === "object" ? like._id === userId : like === userId
+    );
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
@@ -701,12 +824,18 @@ const BlogDetails = () => {
         <div className="flex justify-center items-center gap-x-4">
           <button
             className={`rounded-full p-3 text-[20px] hover:text-black text-white ${
-              likeStatus === "loading" ? "opacity-50 cursor-not-allowed" : ""
+              likeStatus === "loading" || hasLiked
+                ? "opacity-50 cursor-not-allowed"
+                : ""
             }`}
             onClick={handleLike}
             disabled={likeStatus === "loading"}
             title={
-              isLoggedIn ? "Click to like this post" : "Login to like this post"
+              !isLoggedIn
+                ? "Login to like this post"
+                : hasLiked
+                ? "You have already liked this post"
+                : "Click to like this post"
             }
           >
             <GoThumbsup />

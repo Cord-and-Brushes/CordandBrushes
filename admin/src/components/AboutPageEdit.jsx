@@ -21,6 +21,7 @@ const AboutPageEdit = () => {
     name: "",
     designation: "",
     image: "",
+    feedback: "",
   });
   const [editingLeaders, setEditingLeaders] = useState({});
   const [editingTeams, setEditingTeams] = useState({});
@@ -44,9 +45,13 @@ const AboutPageEdit = () => {
     setStory({ ...story, [e.target.name]: e.target.value });
   const handleStorySubmit = (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
     fetch(`${API}/content/edit`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(story),
     })
       .then((res) => res.json())
@@ -58,9 +63,13 @@ const AboutPageEdit = () => {
     setNewLeader({ ...newLeader, [e.target.name]: e.target.value });
   const handleAddLeader = (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
     fetch(`${API}/leader/addleader`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(newLeader),
     })
       .then((res) => res.json())
@@ -70,9 +79,13 @@ const AboutPageEdit = () => {
       });
   };
   const handleEditLeader = (id, leader) => {
+    const token = localStorage.getItem("token");
     fetch(`${API}/leader/edit/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(leader),
     })
       .then((res) => res.json())
@@ -84,7 +97,13 @@ const AboutPageEdit = () => {
       });
   };
   const handleDeleteLeader = (id) => {
-    fetch(`${API}/leader/delete/${id}`, { method: "DELETE" }).then(() =>
+    const token = localStorage.getItem("token");
+    fetch(`${API}/leader/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(() =>
       setAbout({ ...about, leaders: about.leaders.filter((l) => l._id !== id) })
     );
   };
@@ -94,21 +113,29 @@ const AboutPageEdit = () => {
     setNewTeam({ ...newTeam, [e.target.name]: e.target.value });
   const handleAddTeam = (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
     fetch(`${API}/team/addmember`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(newTeam),
     })
       .then((res) => res.json())
       .then((teams) => {
         setAbout({ ...about, teams });
-        setNewTeam({ name: "", designation: "", image: "" });
+        setNewTeam({ name: "", designation: "", image: "", feedback: "" });
       });
   };
   const handleEditTeam = (id, member) => {
+    const token = localStorage.getItem("token");
     fetch(`${API}/team/edit/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(member),
     })
       .then((res) => res.json())
@@ -120,7 +147,13 @@ const AboutPageEdit = () => {
       });
   };
   const handleDeleteTeam = (id) => {
-    fetch(`${API}/team/delete/${id}`, { method: "DELETE" }).then(() =>
+    const token = localStorage.getItem("token");
+    fetch(`${API}/team/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(() =>
       setAbout({ ...about, teams: about.teams.filter((m) => m._id !== id) })
     );
   };
@@ -135,11 +168,15 @@ const AboutPageEdit = () => {
 
     const formData = new FormData();
     formData.append("image", file);
+    const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("/api/aboutpage/upload-image", {
+      const res = await fetch(`${API}/upload-image`, {
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = await res.json();
 
@@ -427,6 +464,20 @@ const AboutPageEdit = () => {
                     />
                   )}
                 </div>
+
+                <h4 className="font-anta bold-18 pb-2">Say about us:</h4>
+                <textarea
+                  value={editing.feedback}
+                  onChange={(e) =>
+                    setEditingTeams({
+                      ...editingTeams,
+                      [member._id]: { ...editing, feedback: e.target.value },
+                    })
+                  }
+                  rows={5}
+                  className="bg-black/50 outline-none w-full py-2 px-3 rounded-md text-white min-h-[100px]"
+                  placeholder="Say about us"
+                />
               </div>
               <div className="flex flex-col gap-y-2 justify-center items-stretch min-w-[120px]">
                 <button
@@ -471,6 +522,13 @@ const AboutPageEdit = () => {
             onChange={handleTeamChange}
             placeholder="Designation"
             required
+            className="bg-black/50 outline-none w-full py-2 px-3 rounded-md text-white mb-1"
+          />
+          <textarea
+            name="feedback"
+            value={newTeam.feedback}
+            onChange={handleTeamChange}
+            placeholder="Say about us"
             className="bg-black/50 outline-none w-full py-2 px-3 rounded-md text-white mb-1"
           />
           <div className="flex flex-col lg:flex-row gap-x-4 gap-y-2 items-center">

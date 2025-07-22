@@ -1,23 +1,38 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const authController = require('../controllers/authController');
+const authController = require("../controllers/authController");
+const authMiddleware = require("../middleware/authMiddleware");
 
+router.post("/register", authController.register);
 
+router.post("/login", authController.login);
 
-router.post('/register', authController.register);
+router.get("/users", authController.getAllUsers);
 
-router.post('/login', authController.login);
+router.post("/forgot-password", authController.forgotPassword);
 
-router.get('/users', authController.getAllUsers);
+router.get("/verify-email/:token", authController.verifyEmail);
 
-router.post('/forgot-password', authController.forgotPassword);
+router.get("/reset-password/:id/:token", authController.resetPasswordGet);
 
-router.get('/verify-email/:token', authController.verifyEmail);
+router.put("/reset-password/:id/:token", authController.resetPasswordPut);
 
-router.get('/reset-password/:id/:token', authController.resetPasswordGet);
+// Phone verification routes
+router.post("/send-phone-otp", authController.sendPhoneOTP);
+router.post("/verify-phone-otp", authController.verifyPhoneOTP);
+router.post("/resend-phone-otp", authController.resendPhoneOTP);
 
-router.put('/reset-password/:id/:token', authController.resetPasswordPut);
+// Pre-registration phone verification routes
+router.post(
+  "/send-pre-registration-otp",
+  authController.sendPreRegistrationOTP
+);
+router.post(
+  "/verify-pre-registration-otp",
+  authController.verifyPreRegistrationOTP
+);
 
-
+// Update user profile
+router.put("/profile", authMiddleware, authController.updateProfile);
 
 module.exports = router;

@@ -15,6 +15,7 @@ const categoryRoutes = require("./routes/category");
 const liveClassRoutes = require("./routes/liveClassRoutes");
 const workshopRoutes = require("./routes/workshop");
 const aboutpageRoutes = require("./routes/about");
+const contactRoutes = require("./routes/contact");
 
 dotenv.config();
 
@@ -67,6 +68,9 @@ app.use("/api/liveclasses", liveClassRoutes);
 app.use("/api/workshops", workshopRoutes);
 
 app.use("/api/aboutpage", aboutpageRoutes);
+
+app.use("/api/contact", contactRoutes);
+
 //use error handling middleware
 app.use(errorHandler);
 

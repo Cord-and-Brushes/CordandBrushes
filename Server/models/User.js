@@ -26,6 +26,16 @@ const userSchema = new mongoose.Schema({
     trim: true,
     unique: true,
     sparse: true,
+    required: true,
+  },
+  address: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  profilePic: {
+    type: String, // URL or path to the profile picture
+    default: "",
   },
   role: {
     type: String,
@@ -35,6 +45,18 @@ const userSchema = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: false,
+  },
+  isPhoneVerified: {
+    type: Boolean,
+    default: false,
+  },
+  phoneOTP: {
+    type: String,
+    default: null,
+  },
+  phoneOTPExpiry: {
+    type: Date,
+    default: null,
   },
 });
 

@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
 
+const ratingSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  rating: { type: Number, required: true },
+});
+
 const ProductSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -39,6 +44,7 @@ const ProductSchema = new mongoose.Schema({
     default: [],
   },
   popular: { type: Boolean, default: false },
+  ratings: [ratingSchema],
 });
 
 module.exports = mongoose.model("Product", ProductSchema);

@@ -101,8 +101,8 @@ const BlogPage = () => {
         {/* <Heading text="BLOG"/> */}
         {/* <HomePageCarousel /> */}
         <Banner pageName="BlogPage" />
-        <div className="content lg:px-28 lg:gap-4 flex flex-col md:flex-row relative">
-          <div className="left-section px-[10px] sm:px-[50px] flex-col flex justify-center items-center z-12 hide-scrollbar">
+        <div className="content lg:pl-28 pr-8 lg:gap-4 flex flex-col md:flex-row relative">
+          <div className="left-section pl-[10px] sm:pl-[50px] flex-col flex justify-center items-center z-12 hide-scrollbar">
             {/* Pagination component */}
             {currentPosts.map((post) => (
               <BlogCard
@@ -156,10 +156,44 @@ const BlogPage = () => {
               </div>
             </div>
           )}
-          {/*  <div className="right-section px-[10px] lg:w-2/5 lg:sticky top-0">
-           
-            <BlogAuthor />
-          </div> */}
+          <div className="right-section w-full md:w-4/5 lg:sticky top-0 flex flex-col items-center">
+            <h2 className="text-xl font-semibold mb-4">Watch Our Story</h2>
+            <div className="w-full aspect-video mb-4">
+              <video
+                id="myVideo"
+                className="w-full h-full rounded-3xl"
+                poster=""
+                autoPlay
+                loop
+                muted
+                playsInline
+              >
+                <source src="/Venice_10.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <div className="flex flex-col items-center gap-2 mb-4">
+              {/*  <a
+                href="https://example.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Visit Our Website
+              </a> */}
+              <p className="px-8 text-center">
+                want to explore our more videos then{" "}
+                <a
+                  href="https://youtube.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  click here
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
