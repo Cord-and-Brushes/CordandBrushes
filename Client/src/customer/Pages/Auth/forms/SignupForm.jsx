@@ -310,11 +310,11 @@ const SignupForm = () => {
         <form className="form">
           <Heading text="SIGN UP" />
           {successMessage && (
-            <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-center font-medium">
+            <div className="mb-2 p-2 bg-green-100 border border-green-400 text-green-700 rounded text-center font-medium">
               {successMessage}
             </div>
           )}
-          <div className="field mb-2">
+          <div className="field mb-1">
             <input
               type="text"
               name="name"
@@ -330,7 +330,7 @@ const SignupForm = () => {
               <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
             )}
           </div>
-          <div className="field mb-3">
+          <div className="field mb-1">
             <input
               type="email"
               name="email"
@@ -345,7 +345,7 @@ const SignupForm = () => {
               <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
             )}
           </div>
-          <div className="field mb-3">
+          <div className="field mb-1">
             <input
               type="password"
               name="password"
@@ -360,54 +360,53 @@ const SignupForm = () => {
               <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>
             )}
           </div>
-          <div className="field mb-3">
+          <div className="field mb-1">
             <input
-              type="number"
+              type="text"
               name="number"
+              inputMode="numeric"
+              pattern="\d*"
               className={`input-field w-full p-2 rounded-md border ${
                 formErrors.number ? "border-red-500" : "border-black"
               } focus:outline-none focus:border-orange-600`}
               placeholder="Phone Number (10 digits)"
               value={formData.number}
-              onChange={handleChange}
+              onChange={(e) => {
+                // Only allow digits, max 10
+                const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                handleChange({ target: { name: "number", value } });
+              }}
             />
             {formErrors.number && (
               <p className="text-red-500 text-sm mt-1">{formErrors.number}</p>
             )}
           </div>
 
-          {/* Phone Verification Section */}
+          {/* Phone Verification Section 
+      This uses `type="text"` with `inputMode="numeric"` and a custom `onChange` to restrict input to digits only, without showing number input arrows.*/}
           {showPhoneVerification && (
-            <div className="field mb-3 p-3  rounded-lg border border-gray-200">
-              <p className="text-sm text-gray-600 mb-2">
+            <div className="field grid mb-1 p-2  rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600 mb-1">
                 Enter the 6-digit code sent to {formData.number}
               </p>
-              <input
-                type="text"
-                className="input-field w-full p-2 rounded-md border border-black focus:outline-none focus:border-orange-600 text-center text-xl tracking-widest"
-                placeholder="000000"
-                value={phoneOTP}
-                onChange={(e) =>
-                  setPhoneOTP(e.target.value.replace(/\D/g, "").slice(0, 6))
-                }
-                maxLength={6}
-              />
-              {phoneVerificationError && (
-                <p className="text-red-500 text-sm mt-1">
-                  {phoneVerificationError}
-                </p>
-              )}
-              {phoneVerificationSuccess && (
-                <p className="text-green-500 text-sm mt-1">
-                  {phoneVerificationSuccess}
-                </p>
-              )}
-              <div className="flex gap-2 mt-2">
+              <div className="flex w-full items-center gap-2 mb-2">
+                <input
+                  type="text"
+                  className="w-2/3 py-1.5 px-2 rounded-md border border-black focus:outline-none focus:border-orange-600 text-center  tracking-widest"
+                  placeholder="000000"
+                  value={phoneOTP}
+                  onChange={(e) =>
+                    setPhoneOTP(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  maxLength={6}
+                />
+                {/*  </div>
+              <div className="flex w-2/3 gap-2 mt-2"> */}
                 <button
                   type="button"
                   onClick={handleVerifyOTP}
                   disabled={phoneVerificationLoading}
-                  className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 disabled:opacity-50"
+                  className=" w-1/3 bg-orange-600 text-white py-2 px-2 rounded-md hover:bg-orange-700 disabled:opacity-50 text-xs lg:text-sm"
                 >
                   {phoneVerificationLoading ? "Verifying..." : "Verify OTP"}
                 </button>
@@ -415,7 +414,7 @@ const SignupForm = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={countdown > 0 || phoneVerificationLoading}
-                  className={`px-3 py-2 rounded-md text-sm ${
+                  className={`px-2 py-2 rounded-md  text-xs lg:text-sm ${
                     countdown > 0
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -424,10 +423,20 @@ const SignupForm = () => {
                   {countdown > 0 ? `${countdown}s` : "Resend"}
                 </button>
               </div>
+              {phoneVerificationError && (
+                <p className="text-red-500 text-xs ">
+                  {phoneVerificationError}
+                </p>
+              )}
+              {phoneVerificationSuccess && (
+                <p className="text-green-500 text-xs">
+                  {phoneVerificationSuccess}
+                </p>
+              )}
             </div>
           )}
 
-          <div className="field mb-3 flex items-center">
+          <div className="field mb-1 flex items-center">
             <input
               type="checkbox"
               id="terms"
@@ -443,16 +452,16 @@ const SignupForm = () => {
             </label>
           </div>
           {showWarning && (
-            <p className="text-red-500 text-sm mb-3">
+            <p className="text-red-500 text-sm mb-2">
               Please agree to the Terms of Use before signing up.
             </p>
           )}
           {error && (
-            <p className="text-red-500 text-sm mb-3">
+            <p className="text-red-500 text-sm mb-2">
               {error.message || "An error occurred during registration"}
             </p>
           )}
-          <div className="flex flex-col gap-x-3 justify-center items-center py-2">
+          <div className="flex flex-col gap-x-3 justify-center items-center py-1">
             <MyButton
               buttonText={
                 loading
@@ -465,7 +474,7 @@ const SignupForm = () => {
               onClick={handleSignUpClick}
               disabled={loading || phoneVerificationLoading}
             />
-            <div className="mt-3">
+            <div className="mt-1">
               <p>
                 Already a user?{" "}
                 <span

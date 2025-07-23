@@ -12,8 +12,14 @@ import "react-toastify/dist/ReactToastify.css";
 
 const ProductDisplay = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(null);
+  const [sizeAvailable, setSizeAvailable] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [userRating, setUserRating] = useState(0);
+  const [sizeErrorMessage, setSizeErrorMessage] = useState("");
+  const [userRating, setUserRating] = useState(() => {
+    // Try to load user's rating for this product from localStorage
+    const saved = localStorage.getItem(`userRating_${product._id}`);
+    return saved ? Number(saved) : 0;
+  });
   /* const [userFeedback, setUserFeedback] = useState(""); */
   /* const [submitted, setSubmitted] = useState(false); */
   const user = useSelector((state) => state.auth.user);
@@ -31,6 +37,18 @@ const ProductDisplay = ({ product }) => {
   const totalRatings = product.totalRatings || 0;
 
   //console.log(product);
+
+  // Handler for size selection, checks if selected size is available
+  const handleSizeSelected = (size, isAvailable) => {
+    setSelectedSize(size);
+    if (!isAvailable) {
+      setSizeAvailable(false);
+      setSizeErrorMessage("Not Available");
+    } else {
+      setSizeAvailable(true);
+      setSizeErrorMessage("");
+    }
+  };
 
   const handleRatingSubmit = async (ratingValue) => {
     if (!user) {
@@ -54,7 +72,7 @@ const ProductDisplay = ({ product }) => {
       );
       //console.log(res);
       setUserRating(ratingValue);
-
+      localStorage.setItem(`userRating_${product._id}`, ratingValue);
       setErrorMessage("");
       toast.success("Rating submitted!", {
         position: "bottom-right",
@@ -71,6 +89,12 @@ const ProductDisplay = ({ product }) => {
       });
     }
   };
+
+  // Load user's rating from localStorage on mount (in case product changes)
+  useEffect(() => {
+    const saved = localStorage.getItem(`userRating_${product._id}`);
+    if (saved) setUserRating(Number(saved));
+  }, [product._id]);
 
   const handleEnquiryClick = () => {
     if (!user) {
@@ -105,22 +129,25 @@ const ProductDisplay = ({ product }) => {
             <h2>Rate this product:</h2>
             <div className="flex gap-x-1 items-center justify-center">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div
+                <span
                   key={i}
                   onClick={() => handleRatingSubmit(i)}
-                  className={`cursor-pointer w-5 h-5 rounded-sm border border-gray-400 flex items-center justify-center transition-colors duration-150
-                      ${
-                        i <= userRating
-                          ? "bg-orange-500 border-orange-600"
-                          : "bg-gray-200"
-                      }`}
+                  className="cursor-pointer"
                   style={{ minWidth: 20, minHeight: 20 }}
-                />
+                >
+                  {i <= userRating ? (
+                    <MdStar className="text-orange-500" />
+                  ) : (
+                    <MdStarBorder className="text-gray-400" />
+                  )}
+                </span>
               ))}
-              <span className="ml-2 text-black font-semibold text-sm">
-                {userRating > 0 ? userRating : ""}
-              </span>
             </div>
+            {userRating > 0 && (
+              <span className="mt-1 text-black font-semibold text-sm">
+                You rated: {userRating}
+              </span>
+            )}
             {errorMessage && (
               <p className="text-red-500 mt-2 text-sm">{errorMessage}</p>
             )}
@@ -190,17 +217,20 @@ const ProductDisplay = ({ product }) => {
           {/* SIZE SECTION */}
           <div className="mb-4">
             {product.sizes && product.sizes.length > 0 && (
-              <SizeSelector
-                onSizeSelected={setSelectedSize}
-                setErrorMessage={setErrorMessage}
-                sizes={product.sizes}
-                product={product}
-              />
+              <>
+                <SizeSelector
+                  onSizeSelected={handleSizeSelected}
+                  setErrorMessage={setErrorMessage}
+                  sizes={product.sizes}
+                  product={product}
+                />
+                {sizeErrorMessage && (
+                  <p className="text-red-500 mt-2 font-semibold">
+                    {sizeErrorMessage}
+                  </p>
+                )}
+              </>
             )}
-            {/*  {errorMessage && (
-              <p className="text-red-500 mt-2">{errorMessage}</p>
-            )} */}
-
             <ProductDescription product={product} />
           </div>
         </div>

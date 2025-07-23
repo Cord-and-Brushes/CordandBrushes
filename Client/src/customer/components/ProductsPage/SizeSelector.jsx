@@ -2,7 +2,9 @@ import React, { useState } from "react";
 
 const SizeSelector = ({ onSizeSelected, setErrorMessage, sizes }) => {
   const [selectedSize, setSelectedSize] = useState(null);
+  const [unavailableSize, setUnavailableSize] = useState("");
 
+  // Support both array of strings and array of objects with available property
   const sizeData = [
     "18'inch",
     "20'inch",
@@ -13,13 +15,28 @@ const SizeSelector = ({ onSizeSelected, setErrorMessage, sizes }) => {
     "29'inch",
   ];
 
-  const handleSizeClick = (size) => {
-    if (sizes.includes(size)) {
-      setSelectedSize(size);
-      onSizeSelected(size);
+  // Build a lookup for available sizes
+  const availableSizes = Array.isArray(sizes)
+    ? sizes.map((s) => (typeof s === "object" ? s.size : s))
+    : [];
+  const sizeAvailability = Array.isArray(sizes)
+    ? sizeData.map((size) => {
+        const found = sizes.find((s) =>
+          typeof s === "object" ? s.size === size : s === size
+        );
+        return typeof found === "object" ? found.available !== false : !!found;
+      })
+    : sizeData.map(() => false);
+
+  const handleSizeClick = (size, isAvailable) => {
+    setSelectedSize(size);
+    onSizeSelected(size, isAvailable);
+    if (isAvailable) {
       setErrorMessage("");
+      setUnavailableSize("");
     } else {
-      console.log(`Size ${size} is not available.`);
+      setErrorMessage("");
+      setUnavailableSize(size);
     }
   };
 
@@ -28,12 +45,12 @@ const SizeSelector = ({ onSizeSelected, setErrorMessage, sizes }) => {
       <h4 className="bold-16 text-black">Select Size:</h4>
       <div className="grid grid-cols-4 lg:grid-cols-4 gap-6 lg:w-[500px] my-3 text-black">
         {sizeData.map((size, index) => {
-          const isAvailable = sizes.includes(size);
+          const isAvailable = sizeAvailability[index];
           const isSelected = selectedSize === size;
           return (
             <div
               key={index}
-              className={`size-button h-10 w-20 flex items-center justify-center cursor-pointer rounded-md transition-colors duration-200
+              className={`size-button h-10 w-20 flex items-center justify-center rounded-md transition-colors duration-200
                 ${
                   isSelected && isAvailable
                     ? "bg-green-500 text-white ring-2 ring-green-500"
@@ -53,7 +70,7 @@ const SizeSelector = ({ onSizeSelected, setErrorMessage, sizes }) => {
                     : ""
                 }
               `}
-              onClick={() => isAvailable && handleSizeClick(size)}
+              onClick={() => handleSizeClick(size, isAvailable)}
             >
               {size}
             </div>
